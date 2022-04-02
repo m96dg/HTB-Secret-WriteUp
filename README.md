@@ -35,7 +35,7 @@ Utilizzo **gobuster** e mi salvo l'output dell'enumeration:
 
 Uno dei path interessanti è **/api** (potenziale punto d'accesso alla macchina).
 
-La sezione relativa alla documentazione dell'applicazione web presenta un esempio di login con "theadmin". Provo a creare un utetne con le stesse credenziali ma non va a buon fine:
+La sezione relativa alla documentazione dell'applicazione web presenta un esempio di login con "theadmin". Provo a creare un utente con le stesse credenziali ma non va a buon fine:
 
 **$curl -i -X POST -H 'Content-Type: application/json' -d '{"name":"theadmin", "email":"drt@dasith.works", "password":"provaPassword"}' http://10.10.11.120/api/user/register**
 
