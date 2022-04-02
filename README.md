@@ -1,5 +1,5 @@
 # HTB-Secret-WriteUp
-Write Up of HTB machine: Secret
+Write Up of HTB machine: Secret, made public on 02/04/2022
 
 Prima di poter connettersi ad una macchina di HTB è necessario scaricare il certificato della VPN dalla dashboard ed utilizzare OpenVPN:
 
